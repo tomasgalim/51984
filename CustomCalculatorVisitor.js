@@ -1,45 +1,43 @@
 import AnalizadorVisitor from "./generated/AnalizadorVisitor.js";
-import AnalizadorListener from "./generated/AnalizadorListener.js";
 
-// Visitor para tu lenguaje Analizador
-export class CustomAnalizadorVisitor extends AnalizadorVisitor {
+export class CustomJavaScriptGeneratorVisitor extends AnalizadorVisitor {
+    constructor() {
+        super();
+        this.output = [];
+        this.indent = "";
+    }
+
     visitPrograma(ctx) {
         for (let instr of ctx.instruccion()) {
             this.visit(instr);
         }
+        return this.output.join("\n");
     }
+
     visitInstruccion(ctx) {
         if (ctx.bucle()) return this.visit(ctx.bucle());
         if (ctx.salida()) return this.visit(ctx.salida());
     }
+
     visitBucle(ctx) {
-        while (this.visit(ctx.condicion())) {
-            for (let instr of ctx.instruccion()) {
-                this.visit(instr);
-            }
+        const cond = this.visit(ctx.condicion());
+        this.output.push(`${this.indent}while (${cond}) {`);
+        const prevIndent = this.indent;
+        this.indent += "    ";
+        for (let instr of ctx.instruccion()) {
+            this.visit(instr);
         }
+        this.indent = prevIndent;
+        this.output.push(`${this.indent}}`);
     }
+
     visitSalida(ctx) {
         const texto = ctx.CADENA().getText();
-        console.log(texto.slice(1, -1));
+        this.output.push(`${this.indent}console.log(${texto});`);
     }
+
     visitCondicion(ctx) {
-        if (ctx.VERDADERO()) return true;
-        if (ctx.FALSO()) return false;
-    }
-}
-
-// Listener opcional para Analizador
-export class CustomAnalizadorListener extends AnalizadorListener {
-    enterSalida(ctx) {
-        console.log("Se detectó una instrucción de salida (imprimir)");
-    }
-
-    enterBucle(ctx) {
-        console.log("Se detectó un bucle mientras");
-    }
-
-    enterPrograma(ctx) {
-        console.log("Inicio del programa");
+        if (ctx.VERDADERO()) return "true";
+        if (ctx.FALSO()) return "false";
     }
 }

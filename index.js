@@ -4,7 +4,7 @@ import AnalizadorLexer from "./generated/AnalizadorLexer.js";
 import AnalizadorParser from "./generated/AnalizadorParser.js";
 import readline from "readline";
 import fs from "fs";
-import { CustomAnalizadorVisitor } from "./CustomCalculatorVisitor.js"; // Asegúrate de que el nombre y la ruta sean correctos
+import { CustomJavaScriptGeneratorVisitor } from "./CustomCalculatorVisitor.js";
 
 // Variable para saber si hubo errores
 let huboErrores = false;
@@ -78,13 +78,16 @@ async function main() {
     console.log("\nÁrbol de derivación:");
     console.log(tree.toStringTree(parser.ruleNames));
 
-    // Ejecutar el visitor solo si no hubo errores
+    // Validación y traducción
     if (!huboErrores) {
-        const visitor = new CustomAnalizadorVisitor();
-        visitor.visit(tree);
-        console.log("\nAnálisis completado sin errores. El código funciona correctamente.");
+        console.log("\nLa entrada es válida. No se encontraron errores de sintaxis.");
+        const jsVisitor = new CustomJavaScriptGeneratorVisitor();
+        const jsCode = jsVisitor.visit(tree);
+        fs.writeFileSync("main.js", jsCode, "utf8");
+        console.log("\nCódigo JavaScript generado:\n");
+        console.log(jsCode);
     } else {
-        console.log("\nEl análisis encontró errores en el código.");
+        console.log("\nLa entrada contiene errores de sintaxis. No se generó código JavaScript.");
     }
 }
 
@@ -93,7 +96,6 @@ function leerCadena() {
         input: process.stdin,
         output: process.stdout
     });
-
     return new Promise(resolve => {
         rl.question("Ingrese una cadena: ", (answer) => {
             rl.close();
