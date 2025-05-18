@@ -2,4 +2,4 @@ imprimir("Hola mundo!");
 mientras falso {
     imprimir("Esto no se muestra.");
 }
-imprimir("Fin del programa.");
+imprimir("Fin del .");
