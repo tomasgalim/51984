@@ -1,0 +1,12 @@
+//Grmatica en EBNF
+
+<programa> ::= { <instrucción> } ;
+<instrucción> ::= <bucle> | <salida> ;
+<bucle> ::= "mientras" <condición> "{" { <instrucción> } "}" ;
+<salida> ::= "imprimir" "(" <cadena> ")" ";" ;
+<condición> ::= "verdadero" | "falso" ;
+<cadena> ::= "" { <carácter> } ;
+<carácter> ::= <letra> | <dígito> | " " | <símbolo> ;
+<letra> ::= "a" | "b" | ... | "z" | "A" | "B" | ... | "Z" ;
+<dígito> ::= "0" | "1" | ... | "9" ;
+<símbolo> ::= "." | "," | "!" | "?" | ":" | ";" | "'" ;

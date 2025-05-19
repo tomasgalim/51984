@@ -1,0 +1,3 @@
+//imprimir "Hola mundo!") 
+
+//El error sintactico es debido a la falta de "(" y del ";"

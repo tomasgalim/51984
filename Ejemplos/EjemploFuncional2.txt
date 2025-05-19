@@ -1,0 +1,5 @@
+imprimir("Inicio del programa.");
+mientras falso {
+    imprimir("Esto no se mostrara.");
+}
+imprimir("Termino el ciclo.");

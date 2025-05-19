@@ -12,7 +12,13 @@ let huboErrores = false;
 // Listener personalizado para mostrar errores
 class MyErrorListener extends antlr4.error.ErrorListener {
     syntaxError(recognizer, offendingSymbol, line, column, msg, e) {
-        console.error(`\n[ERROR] Línea ${line}, columna ${column}: ${msg}`);
+        // Detecta si el error viene del lexer o del parser
+        const esLexer = recognizer.constructor.name.includes("Lexer");
+        if (esLexer) {
+            console.error(`\n[ERROR LÉXICO] Línea ${line}, columna ${column}: ${msg}`);
+        } else {
+            console.error(`\n[ERROR SINTÁCTICO] Línea ${line}, columna ${column}: ${msg}`);
+        }
         huboErrores = true;
     }
 }
@@ -60,9 +66,8 @@ async function main() {
     inputStream = CharStreams.fromString(input);
     lexer = new AnalizadorLexer(inputStream);
 
-    // Agregar listener de errores al lexer (por si hay errores en la segunda pasada)
+    // Elimina los listeners por defecto del lexer, pero NO agregues el tuyo aquí
     lexer.removeErrorListeners();
-    lexer.addErrorListener(new MyErrorListener());
 
     let tokenStream = new CommonTokenStream(lexer);
     let parser = new AnalizadorParser(tokenStream);
@@ -83,11 +88,11 @@ async function main() {
         console.log("\nLa entrada es válida. No se encontraron errores de sintaxis.");
         const jsVisitor = new CustomJavaScriptGeneratorVisitor();
         const jsCode = jsVisitor.visit(tree);
-        fs.writeFileSync("main.js", jsCode, "utf8");
+        fs.writeFileSync("ejemplo.js", jsCode, "utf8");
         console.log("\nCódigo JavaScript generado:\n");
         console.log(jsCode);
     } else {
-        console.log("\nLa entrada contiene errores de sintaxis. No se generó código JavaScript.");
+        console.log("\nLa entrada contiene errores de sintaxis. No se generó el código en JavaScript.");
     }
 }
 
